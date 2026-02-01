@@ -1,16 +1,17 @@
-import adapter from '@sveltejs/adapter-auto';
-
-const dev = process.argv.includes('dev');
+import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  kit: {
-    adapter: adapter({ fallback: '404.html' }),
-    paths: {
-      // Reemplaza 'nombre-de-tu-repo' exactamente por como se llama en GitHub
-      base: dev ? '' : '/test_svelte_iris',
-    }
-  }
+	preprocess: vitePreprocess(),
+	kit: {
+		adapter: adapter({
+			fallback: '404.html' 
+		}),
+		paths: {
+			base: process.env.NODE_ENV === 'production' ? '/test_svelte_iris' : '',
+		}
+	}
 };
 
 export default config;
