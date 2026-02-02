@@ -5,7 +5,7 @@
   let irisData = /** @type {any[]} */ ([]);
 
   onMount(async () => {
-    const res = await fetch('/data/iris.json');
+    const res = await fetch('./data/iris.json'); // colocar punto correcto al dataset
     irisData = await res.json();
   });
 </script>
