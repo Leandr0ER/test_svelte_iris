@@ -9,3 +9,9 @@
 </svelte:head>
 
 {@render children()}
+
+<style>
+	:global(h1, h2) {
+		text-align: center;
+	}
+</style>

@@ -1,25 +1,30 @@
 <script>
   import Tabla from '$lib/components/Table.svelte';
+  import ScatterPlot from '$lib/components/ScatterPlot.svelte';
+  import InteractiveScatterPlot from '$lib/components/InteractiveScatterPlot.svelte';
   import { onMount } from 'svelte';
 
   let irisData = /** @type {any[]} */ ([]);
 
   onMount(async () => {
-    const res = await fetch('./data/iris.json'); // colocar punto correcto al dataset
+    // Leer desde la carpeta `static/data` usando ruta absoluta
+    const res = await fetch('./data/iris.json');
     irisData = await res.json();
   });
 </script>
 
 <main>
-  <h1>Análisis de Dataset Iris 🌿</h1>
+  <h1>Iris Dataset Analysis</h1>
 
   {#if irisData.length > 0}
     <section>
-      <h2>Datos Crudos</h2>
-      <Tabla datos={irisData} />
+      <h2>Scatter Plot</h2>
+      <InteractiveScatterPlot datos={irisData} />
     </section>
   {:else}
-    <p>Cargando datos... ⌛</p>
+    <div class="loading">
+      <p>Loading dataset... ⌛</p>
+    </div>
   {/if}
 </main>
 
