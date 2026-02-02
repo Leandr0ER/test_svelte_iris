@@ -23,7 +23,7 @@
     </section>
   {:else}
     <div class="loading">
-      <p>Loading dataset... ⌛</p>
+      <p>Loading dataset...</p>
     </div>
   {/if}
 </main>
