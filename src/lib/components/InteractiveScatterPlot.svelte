@@ -19,6 +19,9 @@
   // aumentar margin.right para dar espacio interior y evitar recortes
   const margin = { top: 30, right: 30, bottom: 60, left: 70 };
 
+  // padding interno
+  const innerPadding = 20;
+
   // Función para escalar valores (Normalización simple a píxeles)
   /**
    * Escala un valor numérico dentro de un rango de salida en píxeles.
@@ -41,6 +44,10 @@
     return ((valor - min) / (max - min)) * rangoSalida;
   }
 
+  // rangos efectivos restando padding interno
+  const plotWidth = width - margin.left - margin.right - innerPadding * 2;
+  const plotHeight = height - margin.top - margin.bottom - innerPadding * 2;
+
   // Lógica reactiva ($:) que se recalcula cuando cambian xKey, yKey o los datos
   $: minX = Math.min(...datos.map(d => d[xKey]));
   $: maxX = Math.max(...datos.map(d => d[xKey]));
@@ -58,7 +65,8 @@
     const ticks = [];
     for (let i = 0; i <= ticksCount; i++) {
       const v = minX + (i / ticksCount) * (maxX - minX || 0);
-      const x = escalar(v, minX, maxX, width - margin.left - margin.right) + margin.left;
+      //const x = escalar(v, minX, maxX, width - margin.left - margin.right) + margin.left;
+      const x = margin.left + innerPadding + escalar(v, minX, maxX, plotWidth);
       ticks.push({ value: +v.toFixed(2), x });
     }
     return ticks;
@@ -69,7 +77,8 @@
     const ticks = [];
     for (let i = 0; i <= ticksCount; i++) {
       const v = minY + (i / ticksCount) * (maxY - minY || 0);
-      const y = height - margin.bottom - escalar(v, minY, maxY, height - margin.top - margin.bottom);
+      //const y = height - margin.bottom - escalar(v, minY, maxY, height - margin.top - margin.bottom);
+      const y = height - margin.bottom - innerPadding - escalar(v, minY, maxY, plotHeight);
       ticks.push({ value: +v.toFixed(2), y });
     }
     return ticks;
@@ -86,8 +95,10 @@
   // Lógica reactiva ($:) que se recalcula cuando cambian xKey, yKey o los datos
   $: puntos = datos.map((d, i) => ({
     id: i,
-    x: escalar(d[xKey], minX, maxX, width - margin.left - margin.right) + margin.left,
-    y: height - margin.bottom - escalar(d[yKey], minY, maxY, height - margin.top - margin.bottom),
+    //x: escalar(d[xKey], minX, maxX, width - margin.left - margin.right) + margin.left,
+    //y: height - margin.bottom - escalar(d[yKey], minY, maxY, height - margin.top - margin.bottom),
+    x: margin.left + innerPadding + escalar(d[xKey], minX, maxX, plotWidth),
+    y: height - margin.bottom - innerPadding - escalar(d[yKey], minY, maxY, plotHeight),
     especie: d.species,
     data: d
   }));
@@ -151,6 +162,9 @@
         <line x1={margin.left - 6} x2={margin.left} y1={t.y} y2={t.y} stroke="#333" />
         <text x={margin.left - 10} y={t.y + 4} text-anchor="end" class="tick-label">{t.value}</text>
       {/each}
+
+      <line x1={margin.left} y1={margin.top} x2={width - margin.right} y2={margin.top} stroke="#333" />
+      <line x1={width - margin.right} y1={margin.top} x2={width - margin.right} y2={height - margin.bottom} stroke="#333" />
 
       <!-- Etiquetas de los ejes -->
       <text
@@ -264,9 +278,9 @@
   svg { background: white; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: visible; }
 
   circle { transition: all 0.3s ease; opacity: 0.7; }
-  .setosa { fill: #ff3e00; }
-  .versicolor { fill: #40b3ff; }
-  .virginica { fill: #676778; }
+  .setosa { fill: #1b9e77; }
+  .versicolor { fill: #d95f02; }
+  .virginica { fill: #7570b3; }
   .axis-label { font-size: 14px; fill: #333; pointer-events: none; }
   .tick-label { font-size: 12px; fill: #333; pointer-events: none; }
 
@@ -277,9 +291,9 @@
   .legend-swatch { width: 12px; height: 12px; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 1px rgba(0,0,0,0.03) inset; }
 
   /* Swatches con los mismos colores que los círculos SVG */
-  .legend-swatch.setosa { background-color: #ff3e00; }
-  .legend-swatch.versicolor { background-color: #40b3ff; }
-  .legend-swatch.virginica { background-color: #676778; }
+  .legend-swatch.setosa { background-color: #1b9e77; }
+  .legend-swatch.versicolor { background-color: #d95f02; }
+  .legend-swatch.virginica { background-color: #7570b3; }
   .legend-swatch { border: 1px solid rgba(0,0,0,0.06); }
 
   .legend-label { font-size: 12px; color: #333; }
@@ -300,6 +314,7 @@
     color: #111;
     z-index: 50;
     white-space: nowrap;
+    opacity: 0.8
   }
   .tooltip-row { line-height: 1.2; }
   .tooltip .key { font-weight: 600; margin-right: 6px; color: #333; }
